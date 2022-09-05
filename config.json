@@ -13,5 +13,6 @@
   "client_insecure": true,
   "force_recovery": true,
   "history_size": 10,
-  "history_ttl": "60s"
+  "history_ttl": "60s",
+  "recover": true
 }

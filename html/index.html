@@ -5,35 +5,28 @@
 </head>
 
 <body>
-  <script src="https://unpkg.com/centrifuge@3.0.0/dist/centrifuge.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/centrifugal/centrifuge-js@2.8.4/dist/centrifuge.min.js"></script>
   <script type="text/javascript">
-    const centrifuge = new Centrifuge("ws://localhost:8000/connection/websocket", {});
+      const centrifuge = new Centrifuge("ws://localhost:8000/connection/websocket");
+      centrifuge.setToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM3MjIiLCJleHAiOjE2NjI3MjM4MDN9.FVbnQ1c7G0-kowY686IHhhV64IGuxGccOxaquLJMHK4");
 
-    centrifuge.on('connecting', function (ctx) {
-      console.log(`connecting: ${ctx.code}, ${ctx.reason}`);
-    }).on('connected', function (ctx) {
-      console.log(`connected over ${ctx.transport}`);
-    }).on('disconnected', function (ctx) {
-      console.log(`disconnected: ${ctx.code}, ${ctx.reason}`);
-    }).connect();
+      centrifuge.on('connect', function(ctx) {
+          console.log("connected", ctx);
+      });
 
-    const sub = centrifuge.newSubscription("channel");
+      centrifuge.on('disconnect', function(ctx) {
+          console.log("disconnected", ctx);
+      });
 
-    sub.on('publication', function (ctx) {
-      console.log(ctx);
-    }).on('subscribing', function (ctx) {
-      console.log(`subscribing: ${ctx.code}, ${ctx.reason}`);
-    }).on('subscribed', function (ctx) {
-      console.log('subscribed', ctx);
+      centrifuge.subscribe("channel", function(ctx) {
+          console.log(ctx);
 
-      if (ctx.wasRecovering == true && ctx.recovered == false) {
-        console.log("Need to restart page")
-      } else {
-        console.log("Good, continue to receive messages")
-      }
-    }).on('unsubscribed', function (ctx) {
-      console.log(`unsubscribed: ${ctx.code}, ${ctx.reason}`);
-    }).subscribe();
+          // обработка offset, нужно запомнить offset предыдущего сообщения для каждого канала отдельно и
+          // если offset отличается более чем на 1, то это значит предыдущие сообщения были потеряны
+          // и нужно сделать рестарт страницы
+      });
+
+      centrifuge.connect();
   </script>
 </body>
 

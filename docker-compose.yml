@@ -10,7 +10,7 @@ services:
 
   centrifugo:
     container_name: centrifugo
-    image: centrifugo/centrifugo:v4
+    image: centrifugo/centrifugo:v3
     volumes:
       - ./config.json:/centrifugo/config.json
     command: centrifugo -c config.json
